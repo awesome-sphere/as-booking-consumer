@@ -119,7 +119,7 @@ func updateCancelingStatus(message []byte) {
 }
 
 func updateRedisStatus(theaterID int, timeSlotID int, seatNum int, status string) {
-	url := "http://localhost:9004/seating/update-status"
+	url := "http://as-seating-svc:9004/seating/update-status"
 
 	input := serializer.UpdateStatusSerializer{
 		TimeSlotID: timeSlotID,
@@ -160,7 +160,7 @@ func updatePaymentOrder(userID int, theaterID int, timeSlotID int, seatNum []int
 		return
 	}
 
-	url := "http://localhost:9003/payment/"
+	url := "http://as-payment-svc:9003/payment/"
 	if order {
 		url += "add-order"
 	} else {
