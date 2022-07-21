@@ -45,7 +45,7 @@ func updateBookingStatus(message []byte) {
 		).Find(
 			&timeSlotQuerySet, "time_slot_id = ?", value.TimeSlotID,
 		).Find(
-			&seatNumQuerySet, "seat_number = ?", seatNum,
+			&seatNumQuerySet, "seat_number = ? AND status = ?", seatNum, models.Available,
 		).Updates(
 			models.SeatInfo{
 				Status:     models.SeatStatus(status),
@@ -94,7 +94,7 @@ func updateCancelingStatus(message []byte) {
 		).Find(
 			&timeSlotQuerySet, "time_slot_id = ?", value.TimeSlotID,
 		).Find(
-			&seatNumQuerySet, "seat_number = ?", seatNum,
+			&seatNumQuerySet, "seat_number = ? AND status = ?", seatNum, models.Booked,
 		).Updates(
 			models.SeatInfo{
 				Status:     models.SeatStatus(status),

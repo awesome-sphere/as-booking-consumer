@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/awesome-sphere/as-booking-consumer/db"
 	"github.com/segmentio/kafka-go"
@@ -22,7 +23,16 @@ func initReader(topic string, groupID string, groupBalancers []kafka.GroupBalanc
 	return r
 }
 
-func readFromReader(r *kafka.Reader) {
+func cancelBooking(value []byte) {
+	timer := time.NewTimer(10 * time.Minute)
+	go func() {
+		<-timer.C
+		log.Println("User hasn't bought the ticket, canceling the booking")
+		db.UpdateStatus("canceling", value)
+	}()
+}
+
+func readFromReader(topic string, r *kafka.Reader) {
 	defer r.Close()
 
 	for {
@@ -35,6 +45,11 @@ func readFromReader(r *kafka.Reader) {
 		fmt.Printf("Reading message at topic [%v] partition [%v] offset [%v]: %s", msg.Topic, msg.Partition, msg.Offset, string(msg.Value))
 
 		db.UpdateStatus(msg.Topic, msg.Value)
+		switch topic {
+		case "booking":
+			cancelBooking(msg.Value)
+
+		}
 	}
 }
 
@@ -47,6 +62,6 @@ func Consume(topic string, groupID string, partition int) {
 		readers = append(readers, initReader(topic, groupID, groupBalancers))
 	}
 	for _, reader := range readers {
-		go readFromReader(reader)
+		go readFromReader(topic, reader)
 	}
 }
