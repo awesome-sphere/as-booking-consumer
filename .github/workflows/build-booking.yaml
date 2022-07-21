@@ -1,0 +1,19 @@
+name: Build as-booking CI
+
+on: 
+  push:
+    branches: [ main ]
+
+jobs:
+  build-as-booking:
+    runs-on: ubuntu-latest
+    name: Building as-booking
+    steps:
+      - uses: actions/checkout@v3
+      - id: foo
+        uses: awesome-sphere/as-ci-cd-template@v1
+        with:
+          repo: as-booking
+          token: ${{ secrets.GITHUB_TOKEN }}
+          REGISTRY: ghcr.io
+          BASE_IMG_NAME: ${{ github.repository }}
