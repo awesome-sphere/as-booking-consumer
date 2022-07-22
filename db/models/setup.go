@@ -8,7 +8,6 @@ import (
 	"github.com/awesome-sphere/as-booking-consumer/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"gorm.io/sharding"
 )
 
 var DB *gorm.DB
@@ -41,39 +40,5 @@ func InitDatabase() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	var does_table_exist bool
-
-	db.AutoMigrate(&SeatType{}, &Theater{})
-	// db.AutoMigrate(&Seat{}, &Theater{})
-	for i := 0; i <= theater_number; i++ {
-		time_slot_table := fmt.Sprintf("time_slots_%01d", i)
-		if !db.Migrator().HasTable(time_slot_table) {
-			db.AutoMigrate(&TimeSlot{})
-			db.Migrator().RenameTable("time_slots", time_slot_table)
-			if !does_table_exist {
-				does_table_exist = true
-			}
-		}
-
-		seat_info_table := fmt.Sprintf("seat_infos_%01d", i)
-		if !db.Migrator().HasTable(seat_info_table) {
-			db.AutoMigrate(&SeatInfo{})
-			db.Migrator().RenameTable("seat_infos", seat_info_table)
-			if !does_table_exist {
-				does_table_exist = true
-			}
-		}
-
-	}
-	db.Use(sharding.Register(sharding.Config{
-		ShardingKey:         "theater_id",
-		NumberOfShards:      uint(theater_number + 1),
-		PrimaryKeyGenerator: sharding.PKPGSequence,
-	}, "time_slots", "seat_infos"))
 	DB = db
-	if does_table_exist {
-		go SeedData()
-	} else {
-		DONE_SEEDING = true
-	}
 }
