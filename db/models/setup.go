@@ -8,6 +8,7 @@ import (
 	"github.com/awesome-sphere/as-booking-consumer/utils"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/sharding"
 )
 
 var DB *gorm.DB
@@ -40,5 +41,10 @@ func InitDatabase() {
 	if err != nil {
 		log.Println("Database Connection:" + err.Error())
 	}
+	db.Use(sharding.Register(sharding.Config{
+		ShardingKey:         "theater_id",
+		NumberOfShards:      uint(theater_number + 1),
+		PrimaryKeyGenerator: sharding.PKPGSequence,
+	}, "time_slots", "seat_infos"))
 	DB = db
 }
