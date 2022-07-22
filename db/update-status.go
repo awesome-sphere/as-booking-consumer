@@ -28,7 +28,7 @@ func updateBookingStatus(message []byte) {
 	err := json.Unmarshal(message, &value)
 
 	if err != nil {
-		log.Fatalf("Failed to unmarshal message: %v", err.Error())
+		log.Printf("Failed to unmarshal message: %v", err.Error())
 		return
 	}
 
@@ -53,12 +53,12 @@ func updateBookingStatus(message []byte) {
 				BookedBy:   value.UserID,
 			},
 		).Error; err != nil {
-			log.Fatal(err.Error())
+			log.Println("updateBookingStaus: " + err.Error())
 			return
 		}
 
 		if err := models.DB.Find(&seatType, "id", seatNumQuerySet.SeatTypeID).Error; err != nil {
-			log.Fatal(err.Error())
+			log.Println("updateBookingStatus: " + err.Error())
 			return
 		}
 
@@ -77,7 +77,7 @@ func updateCancelingStatus(message []byte) {
 	err := json.Unmarshal(message, &value)
 
 	if err != nil {
-		log.Fatalf("Failed to unmarshal message: %v", err.Error())
+		log.Printf("Failed to unmarshal message: %v", err.Error())
 		return
 	}
 
@@ -102,12 +102,12 @@ func updateCancelingStatus(message []byte) {
 				BookedBy:   -1,
 			},
 		).Error; err != nil {
-			log.Fatal(err.Error())
+			log.Println("updateCancelStatus: " + err.Error())
 			return
 		}
 
 		if err := models.DB.Find(&seatType, "id", seatNumQuerySet.SeatTypeID).Error; err != nil {
-			log.Fatal(err.Error())
+			log.Println("updateCancelStatus" + err.Error())
 			return
 		}
 
@@ -130,14 +130,14 @@ func updateRedisStatus(theaterID int, timeSlotID int, seatNum int, status string
 	json, err := json.Marshal(input)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println("updateRedisStatus: " + err.Error())
 		return
 	}
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(json))
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println("updateRedisStatus: " + err.Error())
 		return
 	}
 
@@ -156,7 +156,7 @@ func updatePaymentOrder(userID int, theaterID int, timeSlotID int, seatNum []int
 	json, err := json.Marshal(input)
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Println("Json Marshall Update Payment: " + err.Error())
 		return
 	}
 
@@ -170,7 +170,7 @@ func updatePaymentOrder(userID int, theaterID int, timeSlotID int, seatNum []int
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(json))
 
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Printf("Add/Cancel Order: " + err.Error())
 		return
 	}
 

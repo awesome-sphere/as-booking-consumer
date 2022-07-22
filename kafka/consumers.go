@@ -38,7 +38,7 @@ func readFromReader(topic string, r *kafka.Reader) {
 	for {
 		msg, err := r.ReadMessage(context.Background())
 		if err != nil {
-			log.Fatalf("Error while reading message: %v", err)
+			log.Printf("Error while reading message: %v\n", err)
 			continue
 		}
 

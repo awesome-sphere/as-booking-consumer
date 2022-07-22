@@ -22,7 +22,7 @@ func InitDatabase() {
 	theater_amount := utils.GetenvOr("THEATER_AMOUNT", "5")
 	theater_number, err := strconv.Atoi(theater_amount)
 	if err != nil {
-		log.Fatal("Fail to convert type of THEATER_AMOUNT")
+		log.Println("Fail to convert type of THEATER_AMOUNT")
 	}
 	THEATER_AMOUNT = theater_number
 
@@ -38,7 +38,7 @@ func InitDatabase() {
 	db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
 
 	if err != nil {
-		log.Fatal(err)
+		log.Println("Database Connection:" + err.Error())
 	}
 	DB = db
 }
